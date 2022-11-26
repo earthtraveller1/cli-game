@@ -5,9 +5,7 @@
 
 /* All platform-specific code goes here. */
 
-#ifdef _WIN32
-    #include "win32.h"
-#endif
+int get_single_char();
 
 typedef void (*getch_loop_proc)();
 
