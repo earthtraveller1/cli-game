@@ -39,7 +39,7 @@ void release_mutex()
 
 void start_getch_loop(getch_loop_proc proc)
 {
-    getch_thread = (HANDLE)_beginthread(proc, 64, NULL);
+    getch_thread = (HANDLE)_beginthread((_beginthread_proc_type)proc, 64, NULL);
 }
 
 void join_getch_loop()
