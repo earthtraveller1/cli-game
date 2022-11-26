@@ -21,4 +21,6 @@ void release_mutex();
 
 void start_getch_loop(getch_loop_proc proc);
 
+void join_getch_loop();
+
 #endif
