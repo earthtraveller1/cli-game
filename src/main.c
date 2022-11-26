@@ -14,8 +14,6 @@ bool running = true;
 double x = 20.0, y = 10.0;
 double delta_time = 0.0;
 
-clock_t timer_start = 0;
-
 void allocate_framebuffer(uint32_t width, uint32_t height)
 {
     width--;
@@ -92,14 +90,9 @@ void getch_loop()
     }
 }
 
-void start_timer()
-{
-    timer_start = clock();
-}
-
 double get_time()
 {
-    return (clock() - timer_start) / 1000.0;
+    return clock() / 1000.0;
 }
 
 int main()
@@ -109,8 +102,6 @@ int main()
     allocate_framebuffer(terminal_width, terminal_height);
     create_global_mutex();
     start_getch_loop(getch_loop);
-    
-    start_timer();
     
     bool travelling_left = false;
     
