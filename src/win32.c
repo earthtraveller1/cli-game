@@ -46,3 +46,8 @@ void join_getch_loop()
 {
     WaitForSingleObject(getch_thread, INFINITE);
 }
+
+void sleep(uint64_t milliseconds)
+{
+    Sleep(milliseconds);
+}

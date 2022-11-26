@@ -21,4 +21,6 @@ void start_getch_loop(getch_loop_proc proc);
 
 void join_getch_loop();
 
+void sleep(uint64_t milliseconds);
+
 #endif
