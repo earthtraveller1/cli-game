@@ -6,9 +6,7 @@
 /* All platform-specific code goes here. */
 
 #ifdef _WIN32
-    #define get_single_char _getch
-#else
-    #define get_single_char getchar
+    #include "win32.h"
 #endif
 
 typedef void (*getch_loop_proc)();
