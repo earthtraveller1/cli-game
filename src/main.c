@@ -1,33 +1,16 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 
-#include <Windows.h>
-#include <conio.h>
-#include <process.h>
+#include "platform.h"
 
 char** framebuffer;
 int32_t framebuffer_width, framebuffer_height;
 
 bool running = true;
 
-HANDLE global_mutex;
 int8_t x = 0, y = 0;
-
-#ifdef _WIN32
-    #define get_single_char _getch
-#else
-    #define get_single_char getchar
-#endif
-
-void get_terminal_size(uint32_t* width, uint32_t* height)
-{
-    CONSOLE_SCREEN_BUFFER_INFO console_info;
-    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &console_info);
-    
-    *width = console_info.srWindow.Right - console_info.srWindow.Left + 1;
-    *height = console_info.srWindow.Bottom - console_info.srWindow.Top + 1;
-}
 
 void allocate_framebuffer(uint32_t width, uint32_t height)
 {
@@ -85,23 +68,6 @@ void renderer_end()
     }
 }
 
-#ifdef _WIN32
-void create_global_mutex()
-{
-    global_mutex = CreateMutexW(NULL, FALSE, NULL);
-}
-
-void wait_for_mutex()
-{
-    WaitForSingleObject(global_mutex, INFINITE);
-}
-
-void release_mutex()
-{
-    ReleaseMutex(global_mutex);
-}
-#endif
-
 void handle_event(char event)
 {
     wait_for_mutex();
@@ -136,32 +102,13 @@ void getch_loop()
     }
 }
 
-#ifdef _WIN32
-struct getch_loop
-{
-    HANDLE thread;
-};
-
-void start_getch_loop(struct getch_loop* self)
-{
-    self->thread = (HANDLE)_beginthread((_beginthread_proc_type)getch_loop, 64, NULL);
-}
-
-void wait_for_getch_loop_to_end(struct getch_loop* self)
-{
-    WaitForSingleObject(self->thread, INFINITE);
-}
-#endif
-
 int main()
 {
     uint32_t terminal_width, terminal_height;
     get_terminal_size(&terminal_width, &terminal_height);
-    
     allocate_framebuffer(terminal_width, terminal_height);
-    
-    struct getch_loop getch_loop;
-    start_getch_loop(&getch_loop);
+    create_global_mutex();
+    start_getch_loop(getch_loop);
     
     while (running)
     {
@@ -177,7 +124,7 @@ int main()
         renderer_end();
     }
     
-    wait_for_getch_loop_to_end(&getch_loop);
+    join_getch_loop();
     
     return 0;
 }
